@@ -1,0 +1,51 @@
+# Node.js
+node_modules/
+pnpm-debug.log*
+
+# Logs
+logs/
+*.log
+*.log.*
+/dist
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Compiled code
+build/
+dist/
+*.tsbuildinfo
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Env files
+.env
+
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Caches
+Thumbs.db
+*.cache
+.cache/
+
+# TypeScript
+*.d.ts
