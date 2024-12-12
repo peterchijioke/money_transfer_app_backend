@@ -28,7 +28,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon server.ts --exec ts-node"
+    "dev": "nodemon --files server.ts"
   },
   "keywords": [],
   "author": "",

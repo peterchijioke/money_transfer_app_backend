@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import argon2 from 'argon2';
+import * as argon2 from "argon2";
 import jwt from 'jsonwebtoken';
 import knex from '../db/db';
+import { User } from '../types/user.types';
 
 export const signup = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -17,11 +18,11 @@ export const signup = async (req: Request, res: Response) => {
 };
 
 
-export const login = async (req: Request, res: Response): Promise<Response> => {
+export const login = async (req: Request, res: Response): Promise<any> => {
   const { email, password } = req.body;
 
   try {
-    const [user] = await knex('users').where({ email });
+    const [user] = await knex<User>('users').where({ email });
 
     if (!user || !(await argon2.verify(user.password, password))) {
       return res.status(401).json({ message: 'Invalid credentials' });
