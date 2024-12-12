@@ -4,7 +4,6 @@ export const handleWebhook = async (req: Request, res: Response) => {
   const { event, data } = req.body;
   try {
     if (event === 'deposit.completed') {
-      // Logic to process completed deposit
       console.log('Deposit completed:', data);
     }
     res.status(200).json({ message: 'Webhook received' });

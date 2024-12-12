@@ -49,3 +49,8 @@ Thumbs.db
 
 # TypeScript
 *.d.ts
+
+
+
+
+# npx knex migrate:make create_users_table --migrations-directory db/migrations
