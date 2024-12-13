@@ -26,6 +26,8 @@ class TransactionController {
   async getTransactionHistory(req: Request, res: Response, next: NextFunction): Promise<any> {
     const userId = req.user?.id;
 
+    
+
     if (!userId) {
       return res.status(401).json({ message: 'Unauthorized' });
     }

@@ -1,4 +1,7 @@
-exports.up = function(knex) {
+
+import { Knex } from 'knex';
+
+exports.up = function (knex: Knex): Promise<void>  {
   return knex.schema.createTable('transactions', function(table) {
     table.increments('id').primary();
     table.string('merchant_ref').notNullable();
@@ -15,6 +18,6 @@ exports.up = function(knex) {
   });
 };
 
-exports.down = function(knex) {
+exports.down = function (knex: Knex): Promise<void>  {
   return knex.schema.dropTableIfExists('transactions');
 };
