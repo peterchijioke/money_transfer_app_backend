@@ -1,22 +1,31 @@
-import { Request, Response } from 'express';
+import { transactionDAO } from '../dao/transaction.dao';
 
-export class WebhookService {
-  /**
-   * Handle webhook events.
-   * @param req - The request object containing the event data.
-   * @param res - The response object to send a response back to the client.
-   */
-  public async handleWebhook(req: Request, res: Response): Promise<void> {
-    const { event, data } = req.body;
+class WebhookService {
 
-    try {
-      if (event === 'deposit.completed') {
-        console.log('Deposit completed:', data);
-      }
+  async processTransferStatus(
+    trx_ref: string,
+    status: string,
+    meta: { account_name: string; account_number: string; amount: number; currency: string },
+    response: string,
+    secret: string
+  ): Promise<void> {
+    const expectedSecret = 'your_webhook_secret_key';
 
-      res.status(200).json({ message: 'Webhook received' });
-    } catch (error) {
-      res.status(500).json({ error: 'Error processing webhook', details: error });
+    if (secret !== expectedSecret) {
+      throw new Error('Invalid webhook secret');
     }
+
+    const transactionStatus = status === 'successful' ? 'completed' : 'failed';
+    const transactionData = {
+      account_name: meta.account_name,
+      account_number: meta.account_number,
+      amount: meta.amount,
+      currency: meta.currency,
+      response,
+    };
+
+    await transactionDAO.updateTransactionStatus(trx_ref, transactionStatus, transactionData);
   }
 }
+
+export const webhookService = new WebhookService();

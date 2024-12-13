@@ -19,7 +19,7 @@ class TransactionController {
       );
       res.status(200).json({ message: 'Transfer successful', transferResponse });
     } catch (error) {
-      next(error);
+      next(error); 
     }
   }
 
@@ -34,7 +34,7 @@ class TransactionController {
       const transactions = await transactionService.getTransactionHistory(userId);
       res.status(200).json({ transactions });
     } catch (error) {
-      next(error);
+      next(error); 
     }
   }
 }

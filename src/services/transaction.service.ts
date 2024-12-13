@@ -8,21 +8,30 @@ class TransactionService {
     amount: number,
     bankCode: string
   ): Promise<any> {
-    const transferResponse = await ravenService.initiateTransfer(recipientAccount, amount, bankCode);
+    try {
+      const bank = await this.getBankNameFromAccount(recipientAccount); 
 
-    await transactionDAO.insertTransaction({
-      user_id: userId,
-      type: 'transfer',
-      amount,
-      status: transferResponse.status,
-      reference: transferResponse.reference,
-    });
+      const transferResponse = await ravenService.initiateTransfer(amount, bank, bankCode, 'NGN');
 
-    return transferResponse;
+      await transactionDAO.insertTransaction({
+        user_id: userId,
+        type: 'transfer',
+        amount,
+        status: transferResponse.status,
+        reference: transferResponse.reference,
+      });
+
+      return transferResponse;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getTransactionHistory(userId: number): Promise<any[]> {
     return transactionDAO.getTransactionsByUserId(userId);
+  }
+  private async getBankNameFromAccount(account: string): Promise<string> {
+    return 'Access Bank'; 
   }
 }
 
