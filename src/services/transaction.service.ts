@@ -9,7 +9,6 @@ class TransactionService {
   constructor() {
     this.webhookUrl = process.env.WEB_HOOK || 'https://webhook.site/1b350e5e-6a4d-42e7-be17-b3a8f0b2b37b';
   }
-
 async sendMoney(
  data:{amount: string, 
   bank_code: string, 
@@ -72,9 +71,19 @@ const {userId,...rest} = data;
   }
 }
 
-  async getTransactionHistory(userId: number): Promise<Transaction[]> {
-    return transactionDAO.getTransactionsByUserId(userId);
+ async getTransactionHistory(userId: number): Promise<Transaction[]> {
+  try {
+    const transactions = await transactionDAO.getTransactionsByUserId(userId);
+    
+    if (!transactions || transactions.length === 0) {
+      return [];
+    }
+    return transactions;
+  } catch (error) {
+    console.error('Error fetching transaction history:', error);
+    return [];
   }
+}
 
 
   private async notifyWebhook(data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>): Promise<void> {
