@@ -5,7 +5,9 @@ import {authenticate} from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
+router.get('/', authenticate, userController.user);
+router.get('/users', authenticate, userController.users);
+
 router.post('/generate-bank-account', authenticate, userController.generateBankAccount);
-router.get('/user-details', authenticate, userController.getUserDetails);
 
 export default router;

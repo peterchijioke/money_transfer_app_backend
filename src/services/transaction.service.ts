@@ -36,7 +36,10 @@ const {userId,...rest} = data;
     const transferResponse = await ravenService.initiateTransfer({...rest});
      if (transferResponse.status === 'fail') {
       console.error('Transfer failed:', transferResponse.message);
-      throw new Error(`Transfer failed: ${transferResponse.message}`);
+       return {
+        status: 'fail',
+        message: transferResponse.message || 'Unknown error',
+      };
     }
     const transaction:any = {
       user_id: userId,
@@ -57,9 +60,6 @@ const {userId,...rest} = data;
       response: transferResponse.response,  
     };
 
-    console.log('===========transaction=========================');
-    console.log(transferResponse);
-    console.log('===========transaction=========================');
 
     await transactionDAO.insertTransaction(transaction);
 

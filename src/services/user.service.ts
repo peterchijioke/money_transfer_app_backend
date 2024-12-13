@@ -8,7 +8,7 @@ class UserService {
         'John', 
         'Doe', 
         '1234567890',
-        '1000',
+        '100',
         'john.doe@example.com' 
       );
 
@@ -18,6 +18,11 @@ class UserService {
 
   async getUserDetails(userId: number): Promise<any> {
     return userDAO.findUserById(userId);
+  }
+  async getAll(): Promise<any> {
+  const users = await userDAO.getAllUsers();
+  const {password,...rest}:any=users
+  return {...rest};
   }
 }
 

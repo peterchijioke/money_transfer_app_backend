@@ -17,6 +17,9 @@ class UserDAO {
    async updateUserBankAccount(userId: number, bankAccount: string): Promise<void> {
     await knex('users').where({ id: userId }).update({ bank_account: bankAccount });
   }
+    async getAllUsers(): Promise<User[]> {
+    return knex<User>('users').select('*');
+  }
 }
 
 export const userDAO = new UserDAO();
