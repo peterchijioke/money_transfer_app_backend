@@ -1,24 +1,37 @@
-import { IsString, IsNumber, IsNotEmpty, IsPositive, Length, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, Length } from 'class-validator';
 
 export class SendMoneyDTO {
-  @IsNumber()
-  @IsPositive()
+  @IsString()
   @IsNotEmpty()
-  userId: number;
+  amount: string;
 
   @IsString()
   @IsNotEmpty()
-  @Length(10, 10)  
-  recipientAccount: string;
-
-  @IsNumber()
-  @IsPositive()
-  @IsNotEmpty()
-  amount: number;
+  @Length(3, 3)
+  bank_code: string;
 
   @IsString()
   @IsNotEmpty()
-  @Length(3, 3)  
-  bankCode: string;
+  bank: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(10, 10)
+  account_number: string;
+
+  @IsString()
+  @IsNotEmpty()
+  account_name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  narration: string;
+
+  @IsString()
+  @IsNotEmpty()
+  reference: string;
+
+  @IsString()
+  @IsNotEmpty()
+  currency: string;
 }

@@ -40,15 +40,19 @@ class RavenService {
   }
 
  
- public async initiateTransfer(amount: number, bank: string, bankCode: string, currency: string) {
+ public async initiateTransfer(data:{amount: string, 
+  bank_code: string, 
+  bank: string, 
+  account_number: string,
+  account_name: string, 
+  narration: string, 
+  reference: string, 
+  currency: string, 
+}) {
+
      try {
-      const response = await this.ravenClient.post('/transfers/create', {
-        amount,
-        bank,
-        bank_code: bankCode,
-        currency,
-      });
-      return response.data; // Returns the transfer response
+      const response = await this.ravenClient.post('/v1/transfers/create', data);
+      return response.data; 
     } catch (error: any) {
       console.error('Error initiating transfer:', error.response?.data || error.message);
       throw new Error(error.response?.data?.message || 'Failed to initiate transfer');

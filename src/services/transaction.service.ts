@@ -11,16 +11,33 @@ class TransactionService {
   }
 
 async sendMoney(
-  userId: number,
-  recipientAccount: string,
-  amount: number,
-  bankCode: string
+ data:{amount: string, 
+  bank_code: string, 
+  bank: string, 
+  account_number: string,
+  account_name: string, 
+  narration: string, 
+  reference: string, 
+  currency: string, 
+  userId: number} 
 ): Promise<any> {
   try {
-    const bank = await this.getBankNameFromAccount(recipientAccount);
-
-    const transferResponse = await ravenService.initiateTransfer(amount, bank, bankCode, 'NGN');
-
+    const {
+  amount,
+  bank_code,
+  bank,
+  account_number,
+  account_name: string, 
+  narration, 
+  reference,
+  currency, 
+  userId: number}=data
+const {userId,...rest} = data;
+    const transferResponse = await ravenService.initiateTransfer({...rest});
+     if (transferResponse.status === 'fail') {
+      console.error('Transfer failed:', transferResponse.message);
+      throw new Error(`Transfer failed: ${transferResponse.message}`);
+    }
     const transaction:any = {
       user_id: userId,
       type: 'transfer',
@@ -29,20 +46,23 @@ async sendMoney(
       reference: transferResponse.trx_ref,
       metadata: {
         bank,
-        recipientAccount,
+        account_number,
         narration: transferResponse.meta?.narration,  
       },
       merchant_ref: transferResponse.merchant_ref,
       trx_ref: transferResponse.trx_ref,
       account_name: transferResponse.meta?.account_name,  
-      account_number: recipientAccount, 
+      account_number, 
       currency: transferResponse.meta?.currency || 'NGN', 
       response: transferResponse.response,  
     };
 
+    console.log('===========transaction=========================');
+    console.log(transferResponse);
+    console.log('===========transaction=========================');
+
     await transactionDAO.insertTransaction(transaction);
 
-    // Notify webhook with the transaction data
     await this.notifyWebhook(transaction);
 
     return transferResponse;
@@ -56,9 +76,6 @@ async sendMoney(
     return transactionDAO.getTransactionsByUserId(userId);
   }
 
-  private async getBankNameFromAccount(account: string): Promise<string> {
-    return 'Access Bank';
-  }
 
   private async notifyWebhook(data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>): Promise<void> {
     try {

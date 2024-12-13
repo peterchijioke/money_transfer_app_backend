@@ -4,7 +4,7 @@ import { transactionService } from '../services/transaction.service';
 class TransactionController {
   async sendMoney(req: Request, res: Response, next: NextFunction): Promise<any> {
     const userId = req.user?.id;
-    const { recipientAccount, amount, bankCode } = req.body;
+    
 
     if (!userId) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -12,10 +12,7 @@ class TransactionController {
 
     try {
       const transferResponse = await transactionService.sendMoney(
-        userId,
-        recipientAccount,
-        amount,
-        bankCode
+        {... req.body,userId}
       );
       res.status(200).json({ message: 'Transfer successful', transferResponse });
     } catch (error) {
