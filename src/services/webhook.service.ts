@@ -1,6 +1,12 @@
+import axios from 'axios';
 import { transactionDAO } from '../dao/transaction.dao';
 
 class WebhookService {
+  private webhookUrl: string;
+
+  constructor() {
+    this.webhookUrl = process.env.WEB_HOOK || 'https://webhook.site/1b350e5e-6a4d-42e7-be17-b3a8f0b2b37b';
+  }
 
   async processTransferStatus(
     trx_ref: string,
@@ -25,7 +31,16 @@ class WebhookService {
     };
 
     await transactionDAO.updateTransactionStatus(trx_ref, transactionStatus, transactionData);
+
+    await this.notifyWebhook({
+      trx_ref,
+      status: transactionStatus,
+      meta,
+      response,
+    });
   }
+
+
 }
 
 export const webhookService = new WebhookService();

@@ -1,12 +1,17 @@
 import knex from '../db/db';
 
 class TransactionDAO {
+  // Insert transaction into the database
   async insertTransaction(transaction: {
-    user_id: number;
-    type: string;
+    merchant_ref: string;
+    trx_ref: string;
+    account_name: string;
+    account_number: string;
+    currency: string;
     amount: number;
     status: string;
-    reference: string;
+    response: string;
+    user_id: number;
   }): Promise<void> {
     await knex('transactions').insert(transaction);
   }
@@ -15,13 +20,17 @@ class TransactionDAO {
     return knex('transactions').where({ user_id: userId });
   }
 
-  async updateTransactionStatus(trx_ref: string, status: string, data: {
-    account_name: string;
-    account_number: string;
-    amount: number;
-    currency: string;
-    response: string;
-  }): Promise<void> {
+  async updateTransactionStatus(
+    trx_ref: string,
+    status: string,
+    data: {
+      account_name: string;
+      account_number: string;
+      amount: number;
+      currency: string;
+      response: string;
+    }
+  ): Promise<void> {
     await knex('transactions')
       .where({ trx_ref })
       .update({
@@ -31,6 +40,7 @@ class TransactionDAO {
         amount: data.amount,
         currency: data.currency,
         response: data.response,
+        updated_at: new Date(),  
       });
   }
 }
