@@ -3,15 +3,16 @@ import { userService } from '../services/user.service';
 
 class UserController {
   async generateBankAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
 
+  
     if (!userId) {
      res.status(401).json({ message: 'Unauthorized' });
      return;
     }
 
     try {
-      const bankAccount = await userService.generateBankAccount(userId);
+      const bankAccount = await userService.generateBankAccount(userId,req.body.amount);
       res.status(201).json({ message: 'Bank account generated', bankAccount });
     } catch (error) {
       next(error);

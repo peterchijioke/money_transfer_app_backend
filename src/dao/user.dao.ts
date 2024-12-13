@@ -6,7 +6,7 @@ class UserDAO {
     return knex<User>('users').where({ email }).first();
   }
 
-  async insertUser(user: Partial<User>): Promise<number> {
+  async insertUser(user: User): Promise<number> {
     const [insertedUserId] = await knex('users').insert(user);
     return insertedUserId;
   }
@@ -14,6 +14,9 @@ class UserDAO {
   async findUserById(id: number): Promise<User | undefined> {
     return knex<User>('users').where({ id }).first();
   }
+ async findUserByPhone(phone: string): Promise<User | undefined> {
+  return knex<User>('users').where({ phone }).first();
+}
    async updateUserBankAccount(userId: number, bankAccount: string): Promise<void> {
     await knex('users').where({ id: userId }).update({ bank_account: bankAccount });
   }

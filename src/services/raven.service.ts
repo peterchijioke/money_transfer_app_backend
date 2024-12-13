@@ -16,22 +16,11 @@ class RavenService {
 
 
   public async generateUniqueBankAccount(
-    userId: string,
-    firstName: string,
-    lastName: string,
-    phone: string,
-    email: string,
-    amount: string
+    payload:any
   ) {
+    
     try {
-      // Request to generate bank account with user details
-      const response = await this.ravenClient.post('/pwbt/generate_account', {
-        first_name: firstName,
-        last_name: lastName,
-        phone,
-        email,
-        amount,
-      });
+      const response = await this.ravenClient.post('/v1/pwbt/generate_account', payload);
       return response.data;  
     } catch (error: any) {
       console.error('Error generating unique bank account:', error);

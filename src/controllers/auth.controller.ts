@@ -3,14 +3,14 @@ import { authService } from '../services/auth.service';
 
 class AuthController {
   async signup(req: Request, res: Response, next: NextFunction): Promise<any> {
-    const { name, email, password } = req.body;
+    const { first_name, last_name, email, password, phone } = req.body;
 
     if (!password || password.length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters long' });
     }
 
     try {
-      const user = await authService.registerUser(name, email, password);
+      const user = await authService.registerUser(first_name, last_name, email, password, phone);
       res.status(201).json({ message: 'User registered successfully', user });
     } catch (error: any) {
       res.status(400).json({ message: error.message });

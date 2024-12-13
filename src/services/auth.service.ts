@@ -3,15 +3,54 @@ import jwt from 'jsonwebtoken';
 import { User } from '../types/user.types';
 import { userDAO } from '../dao/user.dao';
 
+
+
 class AuthService {
-  async registerUser(name: string, email: string, password: string): Promise<User> {
+ async authenticateUser(email: string, password: string): Promise<string> {
+    const user = await userDAO.findUserByEmail(email);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const passwordMatch = await argon2.verify(user.password, password);
+    if (!passwordMatch) {
+      throw new Error('Incorrect password');
+    }
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET || 'your-secret-key', 
+      { expiresIn: '1h' } 
+    );
+    return token;
+  }
+
+async registerUser(
+  first_name: string,
+  last_name: string,
+  email: string,
+  password: string,
+  phone: string
+): Promise<User> {
+  try {
     const existingUser = await userDAO.findUserByEmail(email);
     if (existingUser) {
       throw new Error('Email already exists. Please use a different email.');
     }
 
+    const existingPhoneUser = await userDAO.findUserByPhone(phone);
+    if (existingPhoneUser) {
+      throw new Error('Phone number already in use. Please use a different phone number.');
+    }
+
     const hashedPassword = await argon2.hash(password);
-    const insertedUserId = await userDAO.insertUser({ name, email, password: hashedPassword });
+
+    const insertedUserId = await userDAO.insertUser({
+      first_name,
+      last_name,
+      email,
+      password: hashedPassword,
+      phone,
+    });
 
     const user = await userDAO.findUserById(insertedUserId);
     if (!user) {
@@ -19,17 +58,12 @@ class AuthService {
     }
 
     return user;
+  } catch (error) {
+    console.error('Error during user registration:', error);
+    throw error;
   }
+}
 
-  async authenticateUser(email: string, password: string): Promise<string> {
-    const user = await userDAO.findUserByEmail(email);
-    if (!user || !(await argon2.verify(user.password, password))) {
-      throw new Error('Invalid credentials');
-    }
-
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
-    return token;
-  }
 }
 
 export const authService = new AuthService();
