@@ -17,7 +17,7 @@ class AuthService {
       throw new Error('Incorrect password');
     }
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { id: user.id },
       process.env.JWT_SECRET || 'your-secret-key', 
       { expiresIn: '1h' } 
     );

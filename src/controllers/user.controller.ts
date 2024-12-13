@@ -3,7 +3,7 @@ import { userService } from '../services/user.service';
 
 class UserController {
   async generateBankAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const userId = req.user?.userId;
+    const userId = req.user?.id;
 
   
     if (!req.body.amount) {
