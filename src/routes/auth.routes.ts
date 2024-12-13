@@ -1,5 +1,5 @@
 import express from 'express';
-import authController from '../controllers/auth.controller';
+import {authController} from '../controllers/auth.controller';
 import { SignupDto } from '../dto/sign.dto';
 import { validateRequest } from '../middlewares/validation.middleware';
 import { LoginDto } from '../dto/login.dto';
