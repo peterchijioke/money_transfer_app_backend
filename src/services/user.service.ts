@@ -17,7 +17,6 @@ class UserService {
     email: user.email
   };
   const bankAccount = await ravenService.generateUniqueBankAccount(payload);
-  
   return bankAccount;
 }
 

@@ -6,8 +6,8 @@ class UserController {
     const userId = req.user?.userId;
 
   
-    if (!userId) {
-     res.status(401).json({ message: 'Unauthorized' });
+    if (!req.body.amount) {
+     res.status(401).json({ message: 'Amount required, enter amount' });
      return;
     }
 
