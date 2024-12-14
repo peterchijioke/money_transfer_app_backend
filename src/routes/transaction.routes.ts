@@ -5,7 +5,8 @@ import {validateRequest} from '../middlewares/validation.middleware';
 import {SendMoneyDTO} from '../dto/send-money.dto';
 
 const router = express.Router();
-router.get('/', authenticate, transactionController.history);
+// router.get('/', authenticate, transactionController.history);
 router.post('/send-money',authenticate,validateRequest(SendMoneyDTO), transactionController.sendMoney);
 router.get('/balance',authenticate, transactionController.balance);
+router.get('/',authenticate, transactionController.transactions);
 export default router;

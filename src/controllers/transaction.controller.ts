@@ -42,6 +42,14 @@ class TransactionController {
       next(error); 
     }
   }
+  async transactions(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const transactions = await transactionService.getTransactions();
+      res.status(200).json({ transactions });
+    } catch (error) {
+      next(error); 
+    }
+  }
 
 
 }

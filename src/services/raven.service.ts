@@ -29,9 +29,18 @@ class RavenService {
   }
 
  
- public async getWalletBalance() {
+ public async getBalance() {
      try {
       const response = await this.ravenClient.post('/v1/accounts/wallet_balance');
+      return response.data; 
+    } catch (error: any) {
+      console.error('Error initiating transfer:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || 'Failed to get wallet balance');
+    }
+  }
+ public async getTransactions() {
+     try {
+      const response = await this.ravenClient.get('/v1/accounts/transactions');
       return response.data; 
     } catch (error: any) {
       console.error('Error initiating transfer:', error.response?.data || error.message);

@@ -170,7 +170,18 @@ const {userId,...rest} = data;
 public getBallance =async():Promise<any>=>{
 
 try {
-  const response = await ravenService.getWalletBalance()
+  const response = await ravenService.getBalance()
+  return response
+  
+} catch (error) {
+  throw error
+}  
+
+}
+public getTransactions =async():Promise<any>=>{
+
+try {
+  const response = await ravenService.getTransactions()
   return response
   
 } catch (error) {
