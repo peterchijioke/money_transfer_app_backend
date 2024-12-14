@@ -175,21 +175,27 @@ try {
   
 } catch (error) {
   throw error
-}  
-
+}
 }
 public getTransactions =async():Promise<any>=>{
 
 try {
-  const response = await ravenService.getTransactions()
+  const response = await ravenService.getTransactions();
   return response
-  
 } catch (error) {
   throw error
 }  
-
 }
 
+
+public transactionsWebhook=async(data:any)=>{
+  try {
+      const response = await axios.post(this.webhookUrl, data);
+      console.log('Webhook notification sent successfully:', response.data);
+    } catch (error: any) {
+      console.error('Error sending webhook notification:', error.message);
+    }
+}
 
   private async notifyWebhook(data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>): Promise<void> {
     try {
