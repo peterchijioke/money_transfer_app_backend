@@ -1,7 +1,6 @@
 import knex from '../db/db';
 
 class TransactionDAO {
-  // Insert transaction into the database
   async insertTransaction(transaction: {
     merchant_ref: string;
     trx_ref: string;
@@ -16,9 +15,42 @@ class TransactionDAO {
     await knex('transactions').insert(transaction);
   }
 
-  async getTransactionsByUserId(userId: number): Promise<any[]> {
-    return knex('transactions').where({ user_id: userId });
-  }
+async getTransactionsByUserId(userId: number, currentPage: number = 1, perPage: number = 50): Promise<any> {
+  const offset = (currentPage - 1) * perPage;
+
+  const transactions = await knex('transactions')
+    .where({ user_id: userId })
+    .limit(perPage)
+    .offset(offset);
+
+  const total = await knex('transactions')
+    .where({ user_id: userId })
+    .count('* as count')
+    .first();
+
+  const totalRecords:any = total?.count?? 0;
+  const totalPages = Math.ceil(totalRecords / perPage);
+
+  const nextPage = currentPage < totalPages ? currentPage + 1 : null;
+  const prevPage = currentPage > 1 ? currentPage - 1 : null;
+
+  return {
+    status: "success",
+    message: "transactions retrieved successfully",
+    data: {
+      transactions,
+      pagination: {
+        perPage,
+        currentPage,
+        nextPage,
+        prevPage,
+        totalPages,
+        total: totalRecords,
+      },
+    },
+  };
+}
+
 
   async updateTransactionStatus(
     trx_ref: string,
