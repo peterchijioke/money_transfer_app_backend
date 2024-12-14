@@ -9,65 +9,81 @@ class TransactionService {
   constructor() {
     this.webhookUrl = process.env.WEB_HOOK || 'https://webhook.site/1b350e5e-6a4d-42e7-be17-b3a8f0b2b37b';
   }
-async sendMoney(
- data:{amount: string, 
-  bank_code: string, 
-  bank: string, 
+async sendMoney(data: {
+  amount: string,
+  bank_code: string,
+  bank: string,
   account_number: string,
-  account_name: string, 
-  narration: string, 
-  reference: string, 
-  currency: string, 
-  userId: number} 
-): Promise<any> {
+  account_name: string,
+  narration: string,
+  reference: string,
+  currency: string,
+  userId: number
+}): Promise<any> {
   try {
-    const {
-  amount,
-  bank_code,
-  bank,
-  account_number,
-  account_name: string, 
-  narration, 
-  reference,
-  currency, 
-  userId: number}=data
-const {userId,...rest} = data;
-    const transferResponse = await ravenService.initiateTransfer({...rest});
-     if (transferResponse.status === 'fail') {
-      console.error('Transfer failed:', transferResponse.message);
-       return {
+    const { userId, ...rest } = data;
+    const amount = parseFloat(data.amount);
+
+    if (isNaN(amount) || amount <= 0) {
+      return {
         status: 'fail',
-        message: transferResponse.message || 'Unknown error',
+        message: 'Invalid amount provided',
       };
     }
-    const transaction:any = {
-      user_id: userId,
-      type: 'transfer',
-      amount,
-      status: transferResponse.status === 'successful' ? 'completed' : 'pending', 
-      reference: transferResponse.trx_ref,
-      metadata: {
-        bank,
-        account_number,
-        narration: transferResponse.meta?.narration,  
-      },
-      merchant_ref: transferResponse.merchant_ref,
-      trx_ref: transferResponse.trx_ref,
-      account_name: transferResponse.meta?.account_name,  
-      account_number, 
-      currency: transferResponse.meta?.currency || 'NGN', 
-      response: transferResponse.response,  
+
+    const response = await this.getBallance();
+    if (response?.status === 'success') {
+      const { data } = response;
+      if (Array.isArray(data)) {
+        const hasSufficientBalance = data.some(item => item.available_bal > amount);
+        if (!hasSufficientBalance) {
+          return {
+            status: 'fail',
+            message: 'You have insufficient balance',
+          };
+        }
+
+        const transferResponse = await ravenService.initiateTransfer(rest);
+        if (transferResponse.status === 'fail') {
+          console.error('Transfer failed:', transferResponse.message);
+          return {
+            status: 'fail',
+            message: transferResponse.message || 'Unknown error',
+          };
+        }
+
+        const transaction: any = {
+          user_id: userId,
+          type: 'transfer',
+          amount,
+          status: transferResponse.status === 'successful' ? 'completed' : 'pending',
+          reference: transferResponse.trx_ref,
+          metadata: {
+            bank: rest.bank,
+            account_number: rest.account_number,
+            narration: transferResponse.meta?.narration ?? rest.narration,
+          },
+          merchant_ref: transferResponse.merchant_ref,
+          trx_ref: transferResponse.trx_ref,
+          account_name: transferResponse.meta?.account_name ?? rest.account_name,
+          currency: transferResponse.meta?.currency || 'NGN',
+          response: transferResponse.response,
+        };
+
+        await transactionDAO.insertTransaction(transaction);
+        await this.notifyWebhook(transaction);
+
+        return transferResponse;
+      }
+    }
+
+    return {
+      status: 'fail',
+      message: response.message ?? 'Failed to retrieve balance',
     };
-
-
-    await transactionDAO.insertTransaction(transaction);
-
-    await this.notifyWebhook(transaction);
-
-    return transferResponse;
-  } catch (error) {
+  } catch (error:any) {
     console.error('Error in sendMoney:', error);
-    throw error;
+    throw new Error(`sendMoney failed: ${error.message}`);
   }
 }
 
