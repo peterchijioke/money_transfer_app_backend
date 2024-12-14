@@ -193,7 +193,7 @@ public transactionsWebhook=async(data:any)=>{
       const response = await axios.post(this.webhookUrl, data);
       console.log('Webhook notification sent successfully:', response.data);
     } catch (error: any) {
-      console.error('Error sending webhook notification:', error.message);
+      console.error('Error sending webhook notification:', error);
     }
 }
 
