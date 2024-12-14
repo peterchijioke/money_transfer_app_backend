@@ -71,6 +71,71 @@ const {userId,...rest} = data;
   }
 }
 
+
+// deposit money
+
+async depositMoney(
+ data:{amount: string, 
+  bank_code: string, 
+  bank: string, 
+  account_number: string,
+  account_name: string, 
+  narration: string, 
+  reference: string, 
+  currency: string, 
+  userId: number} 
+): Promise<any> {
+  try {
+    const {
+  amount,
+  bank_code,
+  bank,
+  account_number,
+  account_name: string, 
+  narration, 
+  reference,
+  currency, 
+  userId: number}=data
+const {userId,...rest} = data;
+    const transferResponse = await ravenService.initiateTransfer({...rest});
+     if (transferResponse.status === 'fail') {
+      console.error('Transfer failed:', transferResponse.message);
+       return {
+        status: 'fail',
+        message: transferResponse.message || 'Unknown error',
+      };
+    }
+    const transaction:any = {
+      user_id: userId,
+      type: 'transfer',
+      amount,
+      status: transferResponse.status === 'successful' ? 'completed' : 'pending', 
+      reference: transferResponse.trx_ref,
+      metadata: {
+        bank,
+        account_number,
+        narration: transferResponse.meta?.narration,  
+      },
+      merchant_ref: transferResponse.merchant_ref,
+      trx_ref: transferResponse.trx_ref,
+      account_name: transferResponse.meta?.account_name,  
+      account_number, 
+      currency: transferResponse.meta?.currency || 'NGN', 
+      response: transferResponse.response,  
+    };
+
+
+    await transactionDAO.insertTransaction(transaction);
+
+    await this.notifyWebhook(transaction);
+
+    return transferResponse;
+  } catch (error) {
+    console.error('Error in sendMoney:', error);
+    throw error;
+  }
+}
+
  async getTransactionHistory(userId: number): Promise<Transaction[]> {
   try {
     const transactions = await transactionDAO.getTransactionsByUserId(userId);
@@ -83,6 +148,18 @@ const {userId,...rest} = data;
     console.error('Error fetching transaction history:', error);
     return [];
   }
+}
+
+public getBallance =async():Promise<any>=>{
+
+try {
+  const response = await ravenService.getWalletBalance()
+  return response
+  
+} catch (error) {
+  throw error
+}  
+
 }
 
 

@@ -33,6 +33,17 @@ class TransactionController {
       next(error); 
     }
   }
+  async balance(req: Request, res: Response, next: NextFunction): Promise<any> {
+  
+    try {
+      const balance = await transactionService.getBallance();
+      res.status(200).json({ balance });
+    } catch (error) {
+      next(error); 
+    }
+  }
+
+
 }
 
 export const transactionController = new TransactionController();
