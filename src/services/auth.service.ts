@@ -2,6 +2,7 @@ import * as argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { User } from '../types/user.types';
 import { userDAO } from '../dao/user.dao';
+import { JWT_SECRET } from '../../config';
 
 
 
@@ -18,7 +19,7 @@ class AuthService {
     }
     const token = jwt.sign(
       { id: user.id },
-      process.env.JWT_SECRET || 'your-secret-key', 
+      JWT_SECRET, 
       { expiresIn: '1h' } 
     );
     return token;

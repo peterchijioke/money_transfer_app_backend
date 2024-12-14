@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { ENVIRONMENT } from '../../config';
 
 interface ErrorResponse {
   message: string;
@@ -17,7 +18,7 @@ export const errorHandler = (
     message: 'Something went wrong. Please try again later.',
   };
 
-  if (process.env.NODE_ENV === 'development') {
+  if (ENVIRONMENT === 'development') {
     errorResponse.details = err.message || err.stack || 'No details available';
   }
 
