@@ -15,7 +15,7 @@ class TransactionDAO {
     await knex('transactions').insert(transaction);
   }
 
-async getTransactionsByUserId(userId: number, currentPage: number = 1, perPage: number = 50): Promise<any> {
+ async getTransactionsByUserId(userId: number, currentPage: number = 1, perPage: number = 50): Promise<any> {
   const offset = (currentPage - 1) * perPage;
 
   const transactions = await knex('transactions')
@@ -28,7 +28,7 @@ async getTransactionsByUserId(userId: number, currentPage: number = 1, perPage: 
     .count('* as count')
     .first();
 
-  const totalRecords:any = total?.count?? 0;
+  const totalRecords = Number(total?.count)|| 0;
   const totalPages = Math.ceil(totalRecords / perPage);
 
   const nextPage = currentPage < totalPages ? currentPage + 1 : null;
@@ -50,7 +50,6 @@ async getTransactionsByUserId(userId: number, currentPage: number = 1, perPage: 
     },
   };
 }
-
 
   async updateTransactionStatus(
     trx_ref: string,
