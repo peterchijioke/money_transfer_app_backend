@@ -1,15 +1,14 @@
 
-import dotenv from 'dotenv';
+import { DB_CLIENT, DB_HOST, DB_NAME, DB_PASSWORD, DB_USER } from '../../config';
 
-dotenv.config({ path: "../.env" });
 
 const conf = {
-  client: 'mysql2',
+  client: DB_CLIENT,
   connection: {
-   host: process.env.DB_HOST || '127.0.0.1',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '12345678',
-  database: process.env.DB_NAME || 'transaction',
+   host: DB_HOST,
+  user:DB_USER ,
+  password: DB_PASSWORD,
+  database:DB_NAME
   },
   migrations: {
     directory:  './migrations', 
