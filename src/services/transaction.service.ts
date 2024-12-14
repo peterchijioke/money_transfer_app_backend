@@ -2,12 +2,13 @@ import { transactionDAO } from '../dao/transaction.dao';
 import { ravenService } from './raven.service';
 import axios from 'axios';
 import { Transaction } from '../types/transaction.types';
+import { WEB_HOOK } from '../../config';
 
 class TransactionService {
   private webhookUrl: string;
 
   constructor() {
-    this.webhookUrl = process.env.WEB_HOOK || 'https://webhook.site/1b350e5e-6a4d-42e7-be17-b3a8f0b2b37b';
+    this.webhookUrl = WEB_HOOK;
   }
 async sendMoney(data: {
   amount: string,
