@@ -8,7 +8,7 @@ class TransactionService {
   private webhookUrl: string;
 
   constructor() {
-    this.webhookUrl = WEB_HOOK;
+    this.webhookUrl = WEB_HOOK??"";
   }
 async sendMoney(data: {
   amount: string,
